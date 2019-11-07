@@ -1,2 +1,2 @@
 # Proyecto2
-simulacion gas
+Movimiento browiano
