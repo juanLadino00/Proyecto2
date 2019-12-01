@@ -78,10 +78,58 @@ class Disk:
         self.dir[1]=nuevo_y
         
     def update_velocity_vert(self):
+        vx=self.vel[0]
+        self.vel[0]=-vx
+        self.wall_colls += 1
         
-    def update_velocity_horz(self) #
-    def update_velocity_disk(self, other) #
-    def position(self, pos=None) #
-    def velocity(self, vel=None) #
-    def num_colls(self) #
-    def speed(self) #
+    def update_velocity_horz(self):
+        vy=self.vel[1]
+        self.vel[1]=-vy
+        self.wall_colls += 1
+
+        
+    def update_velocity_disk(self, other):
+        self.disk_colls += 1
+        other.disk_colls += 1
+        
+        x1,y1,vx1,vy1=self.dir[0],self.dir[1],self.vel[0],self.vel[1]
+        x2,y2,vx2,vy2=other.dir[0],other.dir[1],other.vel[0],other.vel[1]
+
+        c=(self.m-other.m)/(self.m+other.m)
+        
+        c_disco=(2*self.m)/(self.m+other.m)
+        c_other_d=(2*other.m)/(self.m+other.m)
+
+        rij=[x1-x2,y1-y2]
+        vij=[vx1-vx2,vy1-vy2]
+        
+        vr=vij[0]*rij[0]+vij[1]*rij[1]
+
+        constante_i=-(c_disco/((self.r+other.r)**2))
+        constante_j=-(c_other_d/((self.r+other.r)**2))
+
+
+        self.vel[0]=(constante_j*vr*rij[0])+self.vel[0]
+        self.vel[1]=(constante_j*vr*rij[1])+self.vel[1]
+        other.vel[0]=(constante_i*vr*rij[0])+other.vel[0]
+        other.vel[1]=(constante_i*vr*rij[1])+self.vel[1]
+        
+    def position(self, pos=None):
+        if pos==None:
+            return self.dir[0],self.dir[1]
+        else:
+            self.dir[0]=pos[0]
+            self.dir[1]=pos[1]
+            
+    def velocity(self, vel=None):
+        if vel==None:
+            return self.vel[0],self.vel[1]
+        else:
+            self.vel[0]=vel[0]
+            self.vel[1]=vel[1]
+            
+    def num_colls(self):
+        return self.disk_colls+self.wall_colls
+    
+    def speed(self):
+        return np.sqrt(self.vel[0]**2 + self.vel[1]**2)
