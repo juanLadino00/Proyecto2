@@ -2,7 +2,7 @@ class Event:
     # Evento tiene 5 atributos: tiempo de colosion, las dos particulas y los atributos
     # Numero de colisiones de han tenido cada una de las particulas
     def __init__(self, t, this, that):
-        self.time = t
+        self.t = t
         self.this_tag = None if this is None else this.tag
         self.that_tag = None if that is None else that.tag
         self.this_colls = None if this is None else this.num_colls()
