@@ -205,19 +205,37 @@ class System:
         ax.grid()
         plt.show()
 
-    def densidad(self):
-        n=len(self.p)/(disk.LX*disk.lY)
-        return n
+##    def densidad(self):
+##        n=len(self.p)/(disk.LX*disk.lY)
+##        return n
     '''
     Funciones buscadas en el libro
     '''
-    def triangular_lattice(self,nx,ny):
+##    def triangular_lattice(self,nx,ny):
+##        dx=disk.LX/nx
+##        dy=disk.LY/ny
+##        for i in range(0,nx):
+##            for j in range(0,ny):
+##                k=i+j*ny
+                
+    def cuadro_lattice(self,nx,ny):
         dx=disk.LX/nx
         dy=disk.LY/ny
-        for i in range(0,nx):
-            for j in range(0,ny):
-                k=i+j*ny
-                
+
+        vary=dy-self.p[0].r
+        var=0
+        for i in range(0,ny):
+            varx=dx-self.p[var].r
+            for j in range(0,nx):
+                self.p[var].dir[0]=varx
+                self.p[var].dir[1]=vary
+                varx=varx+vary
+                var+=1
+            vary=vary+varx
+        
+
+
+        
 
     '''
     Funcion principal

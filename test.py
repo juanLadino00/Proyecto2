@@ -10,7 +10,7 @@ import disk
 import event as ev
 from system import System as sy
 
-NoPart = 200
+NoPart = 80
 colors = ['red', 'blue', 'green']
 
 hola = sy(window = True)
@@ -20,32 +20,14 @@ for i in range(NoPart):
 hola.set_random_positions()
 for j in hola.p:
     j.stat = cir((j.dir[0], j.dir[1]), j.r, color = j.col)
-m=hola.main_loop(sim_time=1000)
+m=hola.main_loop(sim_time=100)
 fig, ax = plt.subplots()
 tiempo = [i for i in range(0, len(m))]
 ax.plot(tiempo, m,'r')
 ax.set(xlabel = 'Tiempo', ylabel = 'Momentum', title = 'Momentum lineal total del sistema de discos')
 ax.grid()
 plt.show()
-# 2.4.1 check_overlap()
-##System.check_overlap()
-##
-##cont = 0
-##for j in System.particles:
-##    # print(j)
-##    cont += 1
-##    j.obj = Circle((j.x, j.y), j.rad, color = j.col)
-##
-##sim_time = 20000
-##Ptot = System.main_loop(sim_time) # Retorna el Momentum en un tiempo t
-##
-### 2.4.1 Grafica del Momentum Lineal
-### print(Ptot)
-### print("len =", len(Ptot))
-##fig, ax = plt.subplots()
-##time = [i for i in range(0, len(Ptot))]
-##ax.plot(time, Ptot)
-##ax.set(xlabel = 't (tiempo)', ylabel = 'Ptot(t) (Momentum)', title = 'Momentum Particle Collitions')
+
 ##ax.grid()
 # plt.savefig("241Ptot.PNG")
 # plt.show()

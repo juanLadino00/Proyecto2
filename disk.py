@@ -1,6 +1,6 @@
 import numpy as np
 
-LX, LY = 400, 400 #Limites del contenedor
+LX, LY = 100, 100 #Limites del contenedor
 VEL_SCALE = .9 #escala que multiplica el random de num.py
 
 class Disk:
