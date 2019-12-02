@@ -3,6 +3,7 @@ import heapq as pq
 import matplotlib.pyplot as plt
 import disk
 import event as ev
+from scipy.constants import k as kb
 ##import frame as fr
 
 
@@ -234,8 +235,9 @@ class System:
             vary=vary+varx
         
 
-
-        
+    def temperatura(self):
+        k = kb
+        temp = self.momemtum_lineal()/2*len(self.p)*k
 
     '''
     Funcion principal
@@ -244,7 +246,7 @@ class System:
         pm=[]
         if self.w == True:
             fig, ax = plt.subplots()
-            fig.set_size_inches(disk.LX/100, disk.LY/100)
+            fig.set_size_inches(disk.LX, disk.LY)
             fig.patch.set_facecolor('xkcd:white')
 
             ax.set_facecolor('xkcd:white')
