@@ -1,16 +1,16 @@
 import numpy as np
 import heapq as pq
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import disk
 import event as ev
-import frame as fr
+##import frame as fr
 
 
 import sys
 sys.path.insert(0,'../')
 
 class System:
-    def __init__(self, particles, window=None, fpe=None):
+    def __init__(self, particles=[], window=None, fpe=None):
         # Tiempo
         self.t=0
         # Cola de eventos
@@ -49,11 +49,25 @@ class System:
         Ahora tenemos que verificar el tiempo de colision de particula con
         las paredes del contenededor
         '''
-        tiempo_paredes=[saucer.vert_wall_coll(),saucer.horz_wall_coll()]
-        for j in tiempo_paredes:
-            if self.t+j<=sim_time:
-                nuevo_evento=ev.Event(self.time+j, saucer, None)
-                pq.heappush(self.pq,nuevo_evento)
+        t1=saucer.vert_wall_coll()
+        t2=saucer.horz_wall_coll()
+        if (self.t+t1)<=sim_time:
+            nuevo_evento=ev.Event(self.t+t1, saucer, None)
+            pq.heappush(self.pq,nuevo_evento)
+        if (self.t+t2)<=sim_time:
+            nuevo_evento=ev.Event(self.t+t2, None, saucer)                
+            pq.heappush(self.pq,nuevo_evento)
+        
+##        tiempo_paredes=[saucer.vert_wall_coll(),saucer.horz_wall_coll()]
+##        for j in range(0,2):
+##            if self.t+tiempo_paredes[j]<=sim_time and j==0:
+##                nuevo_evento=ev.Event(self.t+tiempo_paredes[j], saucer, None)
+##                pq.heappush(self.pq,nuevo_evento)
+##            elif self.t+tiempo_paredes[j]<=sim_time and j==1:
+##                nuevo_evento=ev.Event(self.t+tiempo_paredes[j], None, saucer)                
+##                pq.heappush(self.pq,nuevo_evento)
+
+    
     
     # Bool que verifica que la colision sea valida
     def valid(self, event):
@@ -64,13 +78,15 @@ class System:
         if event.this_tag is not None:
             # Si las colisiones dentro del sistema de la particula son mayores que las que registra el
             # ..evento se retorna falso
-            if self.p[int(event.this_tag)].num_colls()>event.this_colls:
+            a=self.p[int(event.this_tag)].num_colls()
+            if a>event.this_colls:
                 return False
         # hacemos lo mismo con el otro objeto que esta en colision
         if event.that_tag is not None:
             # Si las colisiones dentro del sistema de la particula son mayores que las que registra el
             # ..evento se retorna falso
-            if self.p[int(event.that_tag)].num_colls()>event.that_colls:
+            a=self.p[int(event.that_tag)].num_colls()
+            if a>event.that_colls:
                 return False
         #
         return True
@@ -81,6 +97,7 @@ class System:
         while self.pq !=[]:
             e=pq.heappop(self.pq)
             if self.valid(e):
+                print(e)
                 return e
         return None
         
@@ -107,17 +124,93 @@ class System:
         # Seleccionamos las particulas
         this_tag, that_tag=event.this_tag, event.that_tag
         if this_tag is not None:
-            self.check_colls(self.particles[int(this_tag)], sim_time)
+            self.check_colls(self.p[int(this_tag)], sim_time)
 
-        if tag_b is not None:
-            self.check_colls(self.particles[int(that_tag)], sim_time)        
+        if that_tag is not None:
+            self.check_colls(self.p[int(that_tag)], sim_time)        
+
+    # Para asignar particulas en posiciones aleatorias pero coherentes
+    # Para realizar esta funcion se reviso el cap 8 del libro
+    def check_overlap(self):
+        for i in self.p:
+            for h in self.p:
+                # Si la pasticulas son diferentes
+                if i.tag != h.tag:
+                    # Se mira la separacion entre ambas
+                    dx= np.sqrt((j.dir[0] - i.dir[0])**2 + (j.dir[1] - i.dir[1])**2)
+                    dy= i.r+j.r
+                    if dx<dy:
+                        return False
+        return True
+    
+    def set_random_positions(self):
+        # Posicion de la primera particula
+        self.p[0].dir[0]=disk.LX/2
+        self.p[0].dir[1]=disk.LY/2
+
+        for i in range(1,len(self.p)):
+            radio=self.p[i].r
+            overlap=True
+
+            while overlap:
+                j, overlap = 0, False
+                dx = (disk.LX - 2.0 * radio) * np.random.random() + radio
+                dy = (disk.LY - 2.0 * radio) * np.random.random() + radio
+                # Nueva posicion del disco
+                tmp = np.array([dx, dy])
+
+                while j < i and not overlap:
+                    # Seleccionamos el segundo disco
+                    jd = self.p[j]
+                    # Ubicacion del segundo disco
+                    js = np.array([jd.dir[0], jd.dir[1]])
+                    # Distancia entre discos
+                    m = np.linalg.norm(tmp - js)
+                    a= radio + jd.r
+                    #print(str(a)+"/"+str(m))      
+                    if m <= radio + jd.r:
+                        overlap = True
+                    j += 1
+
+                self.p[i].dir[0] = tmp[0]
+                self.p[i].dir[1] = tmp[1]
+                
+    def momemtum_lineal(self):
+        numero_particulas=len(self.p)
+        p_tot=0
+        for i in range(0,numero_particulas):
+            p_tot+= self.p[i].m *self.p[i].speed()
+        res=p_tot/numero_particulas
+        return res
+
+    def defi_momentum(self,sim_time=100):
+        pm=[]
+        for i in self.p:
+            self.check_colls(i, sim_time)
+        print("voy aca")
+        while(len(self.pq) != 0):
+            event = self.next_valid_event()
+            if event is None:
+                break
+            self.move_all_particles(event)
+            self.update_velocities(event)
+            self.predict_colls(event, sim_time)
+            b=self.momemtum_lineal()
+            pm.append(b)
+            print(b)
+        fig, ax = plt.subplots()
+        tiempo = [i for i in range(0, len(pm))]
+        ax.plot(tiempo, pm)
+        ax.set(xlabel = 'Tiempo', ylabel = 'Momentum', title = 'Momentum lineal total del sistema de discos')
+        ax.grid()
+        plt.show()
 
     '''
-    Funcion para graficar
+    Funcion principal
     '''    
     def main_loop(self, sim_time, fpe=None):
-        Ptot = []
-        if self.window == True:
+        pm=[]
+        if self.w == True:
             fig, ax = plt.subplots()
             fig.set_size_inches(disk.LX/100, disk.LY/100)
             fig.patch.set_facecolor('xkcd:lightgreen')
@@ -131,9 +224,9 @@ class System:
 
         for i in self.p:
             self.check_colls(i, sim_time)
-            if self.window == True:
-                ax.add_artist(i.obj)
-        if self.window == True:
+            if self.w == True:
+                ax.add_artist(i.stat)
+        if self.w == True:
             fig.canvas.draw()
 
         cont = 0
@@ -146,22 +239,22 @@ class System:
             self.predict_colls(event, sim_time)
             cont += 1
 
-            for k in self.particles:
-                k.obj.center = k.x, k.y
-            if self.window == True:
+            for k in self.p:
+                k.stat.center = k.dir[0], k.dir[1]
+            if self.w == True:
                 fig.canvas.draw()
                 plt.pause(0.000000000000001)
 
-            Pt = self.Ptot()
-            Ptot.append(round(Pt, 2))
+            Pt = self.momemtum_lineal()
+            pm.append(round(Pt, 2))
 
-        if self.window == True:
+        if self.w == True:
             plt.show()
 
         print("      Ptot(): Calculando Momentum y graficando.")
 
-        return Ptot
-    def write_time_to_screen(self)
-    def create_all_artists(self)
-    def draw_all_artists(self)
-    def set_random_positions(self)
+        return pm
+##    def write_time_to_screen(self)
+##    def create_all_artists(self)
+##    def draw_all_artists(self)
+##    def set_random_positions(self)

@@ -11,7 +11,7 @@ class Event:
     # Metodos para imprimir
     def __str__(self):
         strg = "Inicia evento: \n"
-        strg += " Tiempo: {:.2f} \n".format(self.time)
+        strg += " Tiempo: {:.2f} \n".format(self.t)
         strg += " Particula uno: {} {} \n".format(self.this_tag, self.this_colls)
         strg += " Otra particula: {} {} \n".format(self.that_tag, self.that_colls)
         strg += "Fin Evento. \n"
@@ -19,17 +19,17 @@ class Event:
         
     # Impresion fina    
     def __repr__(self):
-        strg = "{:.2f}".format(self.time)
+        strg = "{:.2f}".format(self.t)
         strg += "{} {}".format(self.this_tag, self.that_tag)
         strg += "{} {}".format(self.this_colls, self.that_colls)
         return strg
 
     # Metodo less than
     def __lt__(self, other):
-        return self.time < other.time
+        return self.t < other.t
     
     def get_time(self):
-        return self.time
+        return self.t
     
     # Retorna tupla con las particulas que estan en la colision
     def get_tags(self):
