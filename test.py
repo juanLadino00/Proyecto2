@@ -13,7 +13,7 @@ from system import System as sy
 ################################################################################
 # BLOQUE PRINCIPAL DE INSTRUCCIONES ############################################
 
-NoPart = 10
+NoPart = 50
 colors = ['red', 'blue', 'green', 'yellow', 'pink', 'magenta', 'cyan', 'orange', 'purple']
 
 wind = True
@@ -25,8 +25,13 @@ hola.set_random_positions()
 for j in hola.p:
     # print(j)
     j.stat = cir((j.dir[0], j.dir[1]), j.r, color = j.col)
-m=hola.main_loop(sim_time=1000)
-
+m=hola.main_loop(sim_time=100)
+fig, ax = plt.subplots()
+tiempo = [i for i in range(0, len(m))]
+ax.plot(tiempo, m)
+ax.set(xlabel = 'Tiempo', ylabel = 'Momentum', title = 'Momentum lineal total del sistema de discos')
+ax.grid()
+plt.show()
 # 2.4.1 check_overlap()
 ##System.check_overlap()
 ##

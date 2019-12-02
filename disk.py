@@ -12,7 +12,8 @@ class Disk:
         diy=(LY-2.*self.r)*np.random.random()+self.r
         diskr=np.array([dix,diy])
         self.dir=diskr
-        diskv=VEL_SCALE*(2.*np.random.random(2)-1.)
+        #diskv=VEL_SCALE*(2.*np.random.random(2)-1.)
+        diskv=np.array([0.9,0.9])
         self.vel=diskv
         self.stat=None
         
@@ -106,6 +107,8 @@ class Disk:
 
         rij=(x1-x2,y1-y2)
         vij=(vx1-vx2,vy1-vy2)
+
+        rji=(x2-x1,y2-y1)
         
         vr=vij[0]*rij[0]+vij[1]*rij[1]
 
@@ -115,8 +118,8 @@ class Disk:
 
         self.vel[0]=(constante_j*vr*rij[0])+self.vel[0]
         self.vel[1]=(constante_j*vr*rij[1])+self.vel[1]
-        other.vel[0]=(constante_i*vr*rij[0])+other.vel[0]
-        other.vel[1]=(constante_i*vr*rij[1])+self.vel[1]
+        other.vel[0]=(constante_i*vr*rji[0])+other.vel[0]
+        other.vel[1]=(constante_i*vr*rji[1])+self.vel[1]
         
     def position(self, pos=None):
         if pos==None:

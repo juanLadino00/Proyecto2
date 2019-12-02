@@ -79,14 +79,15 @@ class System:
             # Si las colisiones dentro del sistema de la particula son mayores que las que registra el
             # ..evento se retorna falso
             a=self.p[int(event.this_tag)].num_colls()
-            if a>event.this_colls:
+            print(type(a))
+            if a>event.this_colls and type(event.this_colls)==int or event.this_colls>5:
                 return False
         # hacemos lo mismo con el otro objeto que esta en colision
         if event.that_tag is not None:
             # Si las colisiones dentro del sistema de la particula son mayores que las que registra el
             # ..evento se retorna falso
-            a=self.p[int(event.that_tag)].num_colls()
-            if a>event.that_colls:
+            b=self.p[int(event.that_tag)].num_colls()
+            if b>event.that_colls and type(event.that_colls)==int or event.that_colls>5:
                 return False
         #
         return True
@@ -243,7 +244,7 @@ class System:
                 k.stat.center = k.dir[0], k.dir[1]
             if self.w == True:
                 fig.canvas.draw()
-                plt.pause(0.000000000000001)
+                plt.pause(1.e-17)
 
             Pt = self.momemtum_lineal()
             pm.append(round(Pt, 2))
