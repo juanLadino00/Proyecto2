@@ -79,15 +79,14 @@ class System:
             # Si las colisiones dentro del sistema de la particula son mayores que las que registra el
             # ..evento se retorna falso
             a=self.p[int(event.this_tag)].num_colls()
-            print(type(a))
-            if a>event.this_colls and type(event.this_colls)==int or event.this_colls>5:
+            if a>event.this_colls:# and type(event.this_colls)==int or event.this_colls>5:
                 return False
         # hacemos lo mismo con el otro objeto que esta en colision
         if event.that_tag is not None:
             # Si las colisiones dentro del sistema de la particula son mayores que las que registra el
             # ..evento se retorna falso
             b=self.p[int(event.that_tag)].num_colls()
-            if b>event.that_colls and type(event.that_colls)==int or event.that_colls>5:
+            if b>event.that_colls:# and type(event.that_colls)==int or event.that_colls>5:
                 return False
         #
         return True
@@ -206,6 +205,20 @@ class System:
         ax.grid()
         plt.show()
 
+    def densidad(self):
+        n=len(self.p)/(disk.LX*disk.lY)
+        return n
+    '''
+    Funciones buscadas en el libro
+    '''
+    def triangular_lattice(self,nx,ny):
+        dx=disk.LX/nx
+        dy=disk.LY/ny
+        for i in range(0,nx):
+            for j in range(0,ny):
+                k=i+j*ny
+                
+
     '''
     Funcion principal
     '''    
@@ -214,14 +227,14 @@ class System:
         if self.w == True:
             fig, ax = plt.subplots()
             fig.set_size_inches(disk.LX/100, disk.LY/100)
-            fig.patch.set_facecolor('xkcd:lightgreen')
+            fig.patch.set_facecolor('xkcd:white')
 
-            ax.set_facecolor('xkcd:black')
+            ax.set_facecolor('xkcd:white')
             ax.set_aspect('equal')
             ax.set_xlim(0, disk.LX)
             ax.set_ylim(0, disk.LY)
-            ax.set_title('Simulation Collition Particles')
-            plt.grid(True, color = 'w')
+            ax.set_title('Simulacion')
+            plt.grid(True, color = 'black')
 
         for i in self.p:
             self.check_colls(i, sim_time)
@@ -251,8 +264,6 @@ class System:
 
         if self.w == True:
             plt.show()
-
-        print("      Ptot(): Calculando Momentum y graficando.")
 
         return pm
 ##    def write_time_to_screen(self)
